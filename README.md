@@ -50,10 +50,6 @@ Method: POST
 URL: http://localhost:5000/api/auth/logout
 Expected: 200 with "Logged out successfully"
 
-Access Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMjI1ZmZjZmFhMGQ0NzAwZGE4ZDk5OCIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgwNjM3ODI1LCJleHAiOjE3ODA2Mzg3MjV9.pdnppWf583GPB4DxqToERsVFCdQbUVG1FBRJmAWx6Bk
-User_id = 6a225ffcfaa0d4700da8d998
-
-
 Step 7 — Test Backend Profile Endpoints
 Make sure backend is running. In Thunder Client:
 Test 1: Get My Profile
@@ -81,3 +77,13 @@ URL: http://localhost:5000/api/users/<any_user_id>
 Headers:
   Authorization: Bearer <token>
 Expected: 200 with that user's public profile
+
+Step 3 — Test Backend
+Login first to get a fresh token. Then test:
+GET http://localhost:5000/api/mentors?role=mentor
+Authorization: Bearer <token>
+Expected: 200 with results array and pagination object.
+
+GET http://localhost:5000/api/mentors?role=mentor&skill=React
+Authorization: Bearer <token>
+Expected: filtered results.
