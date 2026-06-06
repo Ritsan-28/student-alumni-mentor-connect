@@ -19,6 +19,7 @@ import StudentDashboard from '../pages/StudentDashboard';
 import AlumniDashboard from '../pages/AlumniDashboard';
 import MentorDashboard from '../pages/MentorDashboard';
 import MentorSearch from '../pages/MentorSearch';
+import Connections from '../pages/Connections';
 
 const DashboardRedirect = () => {
   const { user } = useAuthStore();
@@ -49,6 +50,7 @@ const AppRouter = () => {
           <Route path="/profile"             element={<Profile />} />
           <Route path="/profile/view/:id"    element={<ProfileView />} />
           <Route path="/mentors" element={<MentorSearch />} />
+          <Route path="/connections" element={<Connections />} />
 
           {/* Role-based dashboards */}
           <Route element={<RoleRoute allowedRoles={['student']} />}>

@@ -40,13 +40,15 @@ app.get('/health', (req, res) => {
 });
 
 // ─── API Routes ────────────────────────────────────────────────
-const authRoutes = require('./modules/auth/auth.routes');
-const userRoutes = require('./modules/users/user.routes');
-const mentorRoutes = require('./modules/users/mentor.routes');
+const authRoutes        = require('./modules/auth/auth.routes');
+const userRoutes        = require('./modules/users/user.routes');
+const mentorRoutes      = require('./modules/users/mentor.routes');
+const connectionRoutes  = require('./modules/connections/connection.routes');
 
-app.use('/api/auth',    authRoutes);
-app.use('/api/users',   userRoutes);
-app.use('/api/mentors', mentorRoutes);
+app.use('/api/auth',        authRoutes);
+app.use('/api/users',       userRoutes);
+app.use('/api/mentors',     mentorRoutes);
+app.use('/api/connections', connectionRoutes);
 
 // ─── 404 Handler ───────────────────────────────────────────────
 app.use((req, res) => {

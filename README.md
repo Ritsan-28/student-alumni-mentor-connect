@@ -87,3 +87,47 @@ Expected: 200 with results array and pagination object.
 GET http://localhost:5000/api/mentors?role=mentor&skill=React
 Authorization: Bearer <token>
 Expected: filtered results.
+
+Step 8 — Register a Mentor Account for Testing
+Register a new account with role mentor via your frontend or Thunder Client. Then update the profile via:
+PUT http://localhost:5000/api/users/me
+Authorization: Bearer <mentor_token>
+Body:
+{
+  "bio": "Senior engineer with 8 years experience helping students grow",
+  "location": "Bangalore, India",
+  "skills": ["React", "Node.js", "System Design"],
+  "expertise": ["Full Stack", "Career Guidance"],
+  "currentCompany": "Google",
+  "currentPosition": "Senior Engineer",
+  "yearsOfExperience": 8,
+  "availability": "available"
+}
+
+Step 6 — Test Backend
+Login as student to get token. Then:
+Send request:
+
+POST http://localhost:5000/api/connections
+Authorization: Bearer <student_token>
+Body:
+{
+  "receiverId": "<mentor_user_id>",
+  "message": "Hi, I would love to connect and get career guidance!"
+}
+Expected: 201
+
+Get pending:
+GET http://localhost:5000/api/connections/pending
+Authorization: Bearer <student_token>
+Expected: 200 with sent array containing 1 item
+
+Accept (login as mentor):
+PUT http://localhost:5000/api/connections/<connection_id>/accept
+Authorization: Bearer <mentor_token>
+Expected: 200 with status: accepted
+
+Get my connections:
+GET http://localhost:5000/api/connections
+Authorization: Bearer <student_token>
+Expected: 200 with array of connected users
