@@ -131,3 +131,4 @@ Get my connections:
 GET http://localhost:5000/api/connections
 Authorization: Bearer <student_token>
 Expected: 200 with array of connected users
+

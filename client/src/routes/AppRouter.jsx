@@ -20,6 +20,7 @@ import AlumniDashboard from '../pages/AlumniDashboard';
 import MentorDashboard from '../pages/MentorDashboard';
 import MentorSearch from '../pages/MentorSearch';
 import Connections from '../pages/Connections';
+import Messages from '../pages/Messages';
 
 const DashboardRedirect = () => {
   const { user } = useAuthStore();
@@ -51,6 +52,8 @@ const AppRouter = () => {
           <Route path="/profile/view/:id"    element={<ProfileView />} />
           <Route path="/mentors" element={<MentorSearch />} />
           <Route path="/connections" element={<Connections />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:conversationId" element={<Messages />} />
 
           {/* Role-based dashboards */}
           <Route element={<RoleRoute allowedRoles={['student']} />}>

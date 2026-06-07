@@ -1,22 +1,27 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   MapPin, Briefcase, Link as LinkIcon,
   Link2, Globe, Star, Clock,
   GraduationCap, Users,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Avatar from '../components/common/Avatar';
 import Badge from '../components/common/Badge';
 import { PageLoader } from '../components/common/Loader';
 import userService from '../api/userService';
 import useAuthStore from '../store/authStore';
+import connectionService from '../api/connectionService';
+import messageService from '../api/messageService';
 
 const ProfileView = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user: currentUser } = useAuthStore();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [connStatus, setConnStatus] = useState('none');
 
   const isOwnProfile = currentUser?._id === id;
 
@@ -33,6 +38,23 @@ const ProfileView = () => {
     };
     load();
   }, [id]);
+
+  useEffect(() => {
+    if (!isOwnProfile && id) {
+      connectionService.getConnectionStatus(id)
+        .then((res) => setConnStatus(res.data.status))
+        .catch(() => {});
+    }
+  }, [id, isOwnProfile]);
+
+  const handleMessage = async () => {
+    try {
+      const res = await messageService.getOrCreateConversation(id);
+      navigate(`/messages/${res.data._id}`);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Cannot message this user');
+    }
+  };
 
   if (isLoading) return <PageLoader />;
   if (!data) return (
@@ -101,15 +123,18 @@ const ProfileView = () => {
                   </Link>
                 ) : (
                   <>
-                    {/* Connect button — wired in Sprint 4 */}
                     <button className="btn-primary text-sm">
                       <Users className="h-4 w-4 mr-1.5 inline" />
                       Connect
                     </button>
+                    {connStatus === 'accepted' && (
+                      <button onClick={handleMessage} className="btn-primary text-sm">
+                        💬 Message
+                      </button>
+                    )}
                   </>
                 )}
 
-                {/* Social Links */}
                 {profile?.socialLinks?.linkedin && (
                   <a href={profile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer"
                     className="btn-secondary text-sm flex items-center gap-1.5">

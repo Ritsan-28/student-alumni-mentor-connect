@@ -1,10 +1,23 @@
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import AppRouter from './routes/AppRouter';
+import useAuthStore from './store/authStore';
+import useSocketStore from './store/socketStore';
 
 const App = () => {
+  const { isAuthenticated, accessToken } = useAuthStore();
+  const { connect, disconnect } = useSocketStore();
+
+  useEffect(() => {
+    if (isAuthenticated && accessToken) {
+      connect(accessToken);
+    } else {
+      disconnect();
+    }
+  }, [isAuthenticated, accessToken, connect, disconnect]);
+
   return (
     <>
-      {/* Global toast notifications */}
       <Toaster
         position="top-right"
         toastOptions={{

@@ -226,7 +226,6 @@ profileSchema.pre('save', function () {
 });
 
 // ─── Indexes ───────────────────────────────────────────────────
-profileSchema.index({ user: 1 });
 profileSchema.index({ skills: 1 });
 profileSchema.index({ expertise: 1 });
 profileSchema.index({ availability: 1 });
