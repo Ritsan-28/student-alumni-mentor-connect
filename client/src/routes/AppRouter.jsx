@@ -21,6 +21,8 @@ import MentorDashboard from '../pages/MentorDashboard';
 import MentorSearch from '../pages/MentorSearch';
 import Connections from '../pages/Connections';
 import Messages from '../pages/Messages';
+import Events from '../pages/Events';
+import CreateEvent from '../pages/CreateEvent';
 
 const DashboardRedirect = () => {
   const { user } = useAuthStore();
@@ -54,6 +56,8 @@ const AppRouter = () => {
           <Route path="/connections" element={<Connections />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/messages/:conversationId" element={<Messages />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/events/create" element={<CreateEvent />} />
 
           {/* Role-based dashboards */}
           <Route element={<RoleRoute allowedRoles={['student']} />}>
