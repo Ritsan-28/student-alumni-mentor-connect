@@ -189,7 +189,7 @@ const Messages = () => {
       socket.off('user_typing');
       socket.off('user_stop_typing');
     };
-  }, [socket, activeConv]);
+  }, [socket, activeConv, user?._id]);
 
   const handleSelectConversation = (conv) => {
     setActiveConv(conv);
