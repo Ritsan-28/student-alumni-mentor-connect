@@ -48,6 +48,7 @@ const messageRoutes     = require('./modules/messaging/message.routes');
 const eventRoutes       = require('./modules/events/event.routes');
 const jobRoutes         = require('./modules/jobs/job.routes');
 const notificationRoutes   = require('./modules/notifications/notification.routes');
+const adminRoutes          = require('./modules/admin/admin.routes');
 
 app.use('/api/auth',        authRoutes);
 app.use('/api/users',       userRoutes);
@@ -57,6 +58,7 @@ app.use('/api/conversations',  messageRoutes);
 app.use('/api/events',         eventRoutes);
 app.use('/api/jobs',           jobRoutes);
 app.use('/api/notifications',  notificationRoutes);
+app.use('/api/admin',          adminRoutes);
 
 
 // ─── 404 Handler ───────────────────────────────────────────────

@@ -27,6 +27,10 @@ import Jobs from '../pages/Jobs';
 import CreateJob from '../pages/CreateJob';
 import Notifications from '../pages/Notifications';
 
+// Admin Pages
+import AdminDashboard from '../pages/AdminDashboard';
+import AdminUsers from '../pages/AdminUsers';
+
 const DashboardRedirect = () => {
   const { user } = useAuthStore();
   const routes = {
@@ -42,6 +46,7 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* Public */}
         <Route path="/"                element={<Landing />} />
         <Route path="/login"           element={<Login />} />
@@ -52,35 +57,44 @@ const AppRouter = () => {
 
         {/* Protected (any authenticated user) */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard"           element={<DashboardRedirect />} />
-          <Route path="/profile"             element={<Profile />} />
-          <Route path="/profile/view/:id"    element={<ProfileView />} />
-          <Route path="/mentors" element={<MentorSearch />} />
-          <Route path="/connections" element={<Connections />} />
-          <Route path="/messages" element={<Messages />} />
+          <Route path="/dashboard"              element={<DashboardRedirect />} />
+          <Route path="/profile"                element={<Profile />} />
+          <Route path="/profile/view/:id"       element={<ProfileView />} />
+          <Route path="/mentors"                element={<MentorSearch />} />
+          <Route path="/connections"            element={<Connections />} />
+          <Route path="/messages"               element={<Messages />} />
           <Route path="/messages/:conversationId" element={<Messages />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/events/create" element={<CreateEvent />} />
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/jobs/create" element={<CreateJob />} />
-          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/events"                 element={<Events />} />
+          <Route path="/events/create"          element={<CreateEvent />} />
+          <Route path="/jobs"                   element={<Jobs />} />
+          <Route path="/jobs/create"            element={<CreateJob />} />
+          <Route path="/notifications"          element={<Notifications />} />
 
-          {/* Role-based dashboards */}
+          {/* Student only */}
           <Route element={<RoleRoute allowedRoles={['student']} />}>
-            <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/student/dashboard"    element={<StudentDashboard />} />
           </Route>
 
+          {/* Alumni only */}
           <Route element={<RoleRoute allowedRoles={['alumni']} />}>
-            <Route path="/alumni/dashboard"  element={<AlumniDashboard />} />
+            <Route path="/alumni/dashboard"     element={<AlumniDashboard />} />
           </Route>
 
+          {/* Mentor only */}
           <Route element={<RoleRoute allowedRoles={['mentor']} />}>
-            <Route path="/mentor/dashboard"  element={<MentorDashboard />} />
+            <Route path="/mentor/dashboard"     element={<MentorDashboard />} />
+          </Route>
+
+          {/* Admin only */}
+          <Route element={<RoleRoute allowedRoles={['admin']} />}>
+            <Route path="/admin/dashboard"      element={<AdminDashboard />} />
+            <Route path="/admin/users"          element={<AdminUsers />} />
           </Route>
         </Route>
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </BrowserRouter>
   );
