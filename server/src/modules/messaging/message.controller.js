@@ -1,4 +1,6 @@
 const messageService = require('./message.service');
+const notificationService = require('../notifications/notification.service');
+const Conversation = require('../../models/Conversation');
 const ApiResponse = require('../../utils/ApiResponse');
 
 const getOrCreateConversation = async (req, res, next) => {
@@ -34,14 +36,34 @@ const sendMessage = async (req, res, next) => {
     if (!content || !content.trim()) {
       return res.status(400).json({ success: false, message: 'Message cannot be empty' });
     }
+
     const result = await messageService.sendMessage(
       req.user._id, req.params.id, content
     );
 
-    // Emit via Socket.io to the other participant
     const io = req.app.get('io');
     if (io) {
       io.to(`conversation_${req.params.id}`).emit('new_message', result);
+    }
+
+    // Notify the other participant
+    const conversation = await Conversation.findById(req.params.id);
+    if (conversation) {
+      const receiverId = conversation.participants.find(
+        (p) => p.toString() !== req.user._id.toString()
+      );
+
+      if (receiverId) {
+        await notificationService.createNotification({
+          recipientId: receiverId,
+          senderId: req.user._id,
+          type: 'new_message',
+          title: 'New Message',
+          message: `${req.user.name} sent you a message`,
+          link: `/messages/${req.params.id}`,
+          io,
+        });
+      }
     }
 
     res.status(201).json(new ApiResponse(201, result, 'Message sent'));

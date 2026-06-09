@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Bell, Menu, X, LogOut, User, Settings,
@@ -6,40 +6,44 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../../store/authStore';
+import useNotificationStore from '../../store/notificationStore';
+import useSocketStore from '../../store/socketStore';
 import authService from '../../api/authService';
+import notificationService from '../../api/notificationService';
 import Avatar from '../common/Avatar';
 import Badge from '../common/Badge';
 
-// Navigation links per role
 const navLinks = {
   student: [
-    { label: 'Dashboard',    href: '/student/dashboard', icon: GraduationCap },
-    { label: 'Mentors',      href: '/mentors',           icon: Users },
-    { label: 'Events',       href: '/events',            icon: Calendar },
-    { label: 'Jobs',         href: '/jobs',              icon: Briefcase },
+    { label: 'Dashboard',  href: '/student/dashboard', icon: GraduationCap },
+    { label: 'Mentors',    href: '/mentors',            icon: Users },
+    { label: 'Events',     href: '/events',             icon: Calendar },
+    { label: 'Jobs',       href: '/jobs',               icon: Briefcase },
   ],
   alumni: [
-    { label: 'Dashboard',    href: '/alumni/dashboard',  icon: GraduationCap },
-    { label: 'Mentors',      href: '/mentors',           icon: Users },
-    { label: 'Events',       href: '/events',            icon: Calendar },
-    { label: 'Jobs',         href: '/jobs',              icon: Briefcase },
+    { label: 'Dashboard',  href: '/alumni/dashboard',   icon: GraduationCap },
+    { label: 'Mentors',    href: '/mentors',            icon: Users },
+    { label: 'Events',     href: '/events',             icon: Calendar },
+    { label: 'Jobs',       href: '/jobs',               icon: Briefcase },
   ],
   mentor: [
-    { label: 'Dashboard',    href: '/mentor/dashboard',  icon: GraduationCap },
-    { label: 'Requests',     href: '/connections',       icon: Users },
-    { label: 'Events',       href: '/events',            icon: Calendar },
-    { label: 'Jobs',         href: '/jobs',              icon: Briefcase },
+    { label: 'Dashboard',  href: '/mentor/dashboard',   icon: GraduationCap },
+    { label: 'Requests',   href: '/connections',        icon: Users },
+    { label: 'Events',     href: '/events',             icon: Calendar },
+    { label: 'Jobs',       href: '/jobs',               icon: Briefcase },
   ],
   admin: [
-    { label: 'Dashboard',    href: '/admin/dashboard',   icon: GraduationCap },
-    { label: 'Users',        href: '/admin/users',       icon: Users },
-    { label: 'Jobs',         href: '/admin/jobs',        icon: Briefcase },
-    { label: 'Events',       href: '/admin/events',      icon: Calendar },
+    { label: 'Dashboard',  href: '/admin/dashboard',    icon: GraduationCap },
+    { label: 'Users',      href: '/admin/users',        icon: Users },
+    { label: 'Jobs',       href: '/admin/jobs',         icon: Briefcase },
+    { label: 'Events',     href: '/admin/events',       icon: Calendar },
   ],
 };
 
 const Navbar = () => {
   const { user, logout } = useAuthStore();
+  const { unreadCount, setUnreadCount, incrementUnread } = useNotificationStore();
+  const { socket } = useSocketStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,11 +51,32 @@ const Navbar = () => {
 
   const links = navLinks[user?.role] || [];
 
+  // Load initial unread count
+  useEffect(() => {
+    if (!user) return;
+    notificationService.getUnreadCount()
+      .then((res) => setUnreadCount(res.data.count))
+      .catch(() => {});
+  }, [user, setUnreadCount]);
+
+  // Listen for real-time notifications
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('new_notification', () => {
+      incrementUnread();
+    });
+
+    return () => {
+      socket.off('new_notification');
+    };
+  }, [socket, incrementUnread]);
+
   const handleLogout = async () => {
     try {
       await authService.logout();
     } catch {
-      // proceed even if API call fails
+      // proceed even if API fails
     }
     logout();
     toast.success('Logged out successfully');
@@ -99,14 +124,17 @@ const Navbar = () => {
           {/* Right Side */}
           <div className="flex items-center gap-3">
 
-            {/* Notifications Bell */}
+            {/* Notification Bell */}
             <Link
               to="/notifications"
               className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
             >
               <Bell className="h-5 w-5" />
-              {/* Notification count badge — wired up in Sprint 8 */}
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold px-1">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </Link>
 
             {/* Profile Dropdown */}
@@ -126,10 +154,8 @@ const Navbar = () => {
                 </div>
               </button>
 
-              {/* Dropdown Menu */}
               {profileOpen && (
                 <>
-                  {/* Backdrop */}
                   <div
                     className="fixed inset-0 z-10"
                     onClick={() => setProfileOpen(false)}

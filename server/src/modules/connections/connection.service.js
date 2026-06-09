@@ -1,3 +1,4 @@
+const notificationService = require('../notifications/notification.service');
 const Connection = require('../../models/Connection');
 const User = require('../../models/User');
 const ApiError = require('../../utils/ApiError');
@@ -17,7 +18,6 @@ const sendRequest = async (senderId, { receiverId, message }) => {
     throw new ApiError(400, 'Cannot connect with admin');
   }
 
-  // Check if connection already exists in either direction
   const existing = await Connection.findOne({
     $or: [
       { sender: senderId, receiver: receiverId },
@@ -33,7 +33,6 @@ const sendRequest = async (senderId, { receiverId, message }) => {
       throw new ApiError(400, 'Already connected');
     }
     if (existing.status === 'declined') {
-      // Allow re-request after decline
       existing.status = 'pending';
       existing.message = message || '';
       existing.sender = senderId;
@@ -47,6 +46,17 @@ const sendRequest = async (senderId, { receiverId, message }) => {
     sender: senderId,
     receiver: receiverId,
     message: message || '',
+  });
+
+  // Notify receiver
+  const senderUser = await User.findById(senderId).select('name');
+  await notificationService.createNotification({
+    recipientId: receiverId,
+    senderId,
+    type: 'connection_request',
+    title: 'New Connection Request',
+    message: `${senderUser.name} sent you a connection request`,
+    link: `/profile/view/${senderId}`,
   });
 
   return connection;
@@ -70,6 +80,17 @@ const acceptRequest = async (userId, connectionId) => {
 
   connection.status = 'accepted';
   await connection.save();
+
+  // Notify sender
+  const receiverUser = await User.findById(userId).select('name');
+  await notificationService.createNotification({
+    recipientId: connection.sender,
+    senderId: userId,
+    type: 'connection_accepted',
+    title: 'Connection Accepted',
+    message: `${receiverUser.name} accepted your connection request`,
+    link: `/profile/view/${userId}`,
+  });
 
   return connection;
 };
@@ -126,7 +147,6 @@ const getMyConnections = async (userId) => {
     .populate('receiver', 'name email role avatar')
     .sort({ updatedAt: -1 });
 
-  // Return the "other" person in each connection
   const result = connections.map((conn) => {
     const other =
       conn.sender._id.toString() === userId.toString()
@@ -144,7 +164,6 @@ const getMyConnections = async (userId) => {
 
 // ─── Get Pending Requests ──────────────────────────────────────
 const getPendingRequests = async (userId) => {
-  // Requests received by me
   const received = await Connection.find({
     receiver: userId,
     status: 'pending',
@@ -152,7 +171,6 @@ const getPendingRequests = async (userId) => {
     .populate('sender', 'name email role avatar')
     .sort({ createdAt: -1 });
 
-  // Requests sent by me
   const sent = await Connection.find({
     sender: userId,
     status: 'pending',

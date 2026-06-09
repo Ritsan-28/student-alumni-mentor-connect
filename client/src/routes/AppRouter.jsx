@@ -25,6 +25,7 @@ import Events from '../pages/Events';
 import CreateEvent from '../pages/CreateEvent';
 import Jobs from '../pages/Jobs';
 import CreateJob from '../pages/CreateJob';
+import Notifications from '../pages/Notifications';
 
 const DashboardRedirect = () => {
   const { user } = useAuthStore();
@@ -62,6 +63,7 @@ const AppRouter = () => {
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/create" element={<CreateJob />} />
+          <Route path="/notifications" element={<Notifications />} />
 
           {/* Role-based dashboards */}
           <Route element={<RoleRoute allowedRoles={['student']} />}>
