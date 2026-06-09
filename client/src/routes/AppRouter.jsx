@@ -23,6 +23,8 @@ import Connections from '../pages/Connections';
 import Messages from '../pages/Messages';
 import Events from '../pages/Events';
 import CreateEvent from '../pages/CreateEvent';
+import Jobs from '../pages/Jobs';
+import CreateJob from '../pages/CreateJob';
 
 const DashboardRedirect = () => {
   const { user } = useAuthStore();
@@ -58,6 +60,8 @@ const AppRouter = () => {
           <Route path="/messages/:conversationId" element={<Messages />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/create" element={<CreateEvent />} />
+          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/create" element={<CreateJob />} />
 
           {/* Role-based dashboards */}
           <Route element={<RoleRoute allowedRoles={['student']} />}>

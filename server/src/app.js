@@ -46,6 +46,7 @@ const mentorRoutes      = require('./modules/users/mentor.routes');
 const connectionRoutes  = require('./modules/connections/connection.routes');
 const messageRoutes     = require('./modules/messaging/message.routes');
 const eventRoutes       = require('./modules/events/event.routes');
+const jobRoutes         = require('./modules/jobs/job.routes');
 
 app.use('/api/auth',        authRoutes);
 app.use('/api/users',       userRoutes);
@@ -53,6 +54,7 @@ app.use('/api/mentors',     mentorRoutes);
 app.use('/api/connections', connectionRoutes);
 app.use('/api/conversations',  messageRoutes);
 app.use('/api/events',         eventRoutes);
+app.use('/api/jobs',           jobRoutes);
 
 
 // ─── 404 Handler ───────────────────────────────────────────────
