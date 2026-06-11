@@ -27,29 +27,76 @@ const updateProfileValidation = [
   body('socialLinks.linkedin')
     .optional()
     .trim()
-    .isURL()
-    .withMessage('LinkedIn must be a valid URL'),
+    .custom((value) => {
+      if (!value || value === '') return true;
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        throw new Error('LinkedIn must be a valid URL');
+      }
+    }),
 
   body('socialLinks.github')
     .optional()
     .trim()
-    .isURL()
-    .withMessage('GitHub must be a valid URL'),
+    .custom((value) => {
+      if (!value || value === '') return true;
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        throw new Error('GitHub must be a valid URL');
+      }
+    }),
+
+  body('socialLinks.twitter')
+    .optional()
+    .trim()
+    .custom((value) => {
+      if (!value || value === '') return true;
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        throw new Error('Twitter must be a valid URL');
+      }
+    }),
+
+  body('socialLinks.website')
+    .optional()
+    .trim()
+    .custom((value) => {
+      if (!value || value === '') return true;
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        throw new Error('Website must be a valid URL');
+      }
+    }),
 
   body('yearsOfExperience')
     .optional()
-    .isInt({ min: 0, max: 50 })
-    .withMessage('Years of experience must be between 0 and 50'),
-
-  body('availability')
-    .optional()
-    .isIn(['available', 'busy', 'unavailable'])
-    .withMessage('Invalid availability value'),
+    .custom((value) => {
+      if (value === '' || value === null || value === undefined) return true;
+      const num = Number(value);
+      if (isNaN(num) || num < 0 || num > 50) {
+        throw new Error('Years of experience must be between 0 and 50');
+      }
+      return true;
+    }),
 
   body('graduationYear')
     .optional()
-    .isInt({ min: 1980, max: 2030 })
-    .withMessage('Invalid graduation year'),
+    .custom((value) => {
+      if (value === '' || value === null || value === undefined) return true;
+      const num = Number(value);
+      if (isNaN(num) || num < 1980 || num > 2030) {
+        throw new Error('Invalid graduation year');
+      }
+      return true;
+    }),
 ];
 
 module.exports = { updateProfileValidation };
