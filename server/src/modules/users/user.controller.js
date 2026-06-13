@@ -3,7 +3,6 @@ const userService = require('./user.service');
 const ApiResponse = require('../../utils/ApiResponse');
 const ApiError = require('../../utils/ApiError');
 
-// ─── GET /api/users/me ─────────────────────────────────────────
 const getMe = async (req, res, next) => {
   try {
     const result = await userService.getMyProfile(req.user._id);
@@ -15,7 +14,6 @@ const getMe = async (req, res, next) => {
   }
 };
 
-// ─── PUT /api/users/me ─────────────────────────────────────────
 const updateMe = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -33,14 +31,12 @@ const updateMe = async (req, res, next) => {
   }
 };
 
-// ─── PUT /api/users/me/photo ───────────────────────────────────
 const updatePhoto = async (req, res, next) => {
   try {
     if (!req.file) {
       return next(new ApiError(400, 'Please upload an image file'));
     }
 
-    // Cloudinary URL is in req.file.path after multer-storage-cloudinary
     const avatarUrl = req.file.path;
     const user = await userService.updateProfilePhoto(req.user._id, avatarUrl);
 
@@ -52,7 +48,6 @@ const updatePhoto = async (req, res, next) => {
   }
 };
 
-// ─── GET /api/users/:id ────────────────────────────────────────
 const getUserById = async (req, res, next) => {
   try {
     const result = await userService.getUserById(req.user._id, req.params.id);
@@ -64,12 +59,11 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-// ─── GET /api/users ────────────────────────────────────────────
 const getUsers = async (req, res, next) => {
   try {
-    const { role, skill, search, page, limit } = req.query;
+    const { role, skill, availability, search, page, limit } = req.query;
     const result = await userService.getUsers({
-      role, skill, search, page, limit,
+      role, skill, availability, search, page, limit,
     });
     res.status(200).json(
       new ApiResponse(200, result, 'Users fetched successfully')

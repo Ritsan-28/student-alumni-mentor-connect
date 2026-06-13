@@ -53,11 +53,11 @@ const Navbar = () => {
 
   // Load initial unread count
   useEffect(() => {
-    if (!user) return;
+    if (!user?._id) return;
     notificationService.getUnreadCount()
       .then((res) => setUnreadCount(res.data.count))
       .catch(() => {});
-  }, [user, setUnreadCount]);
+  }, [user?._id, setUnreadCount]);
 
   // Listen for real-time notifications
   useEffect(() => {
@@ -90,7 +90,6 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          {/* Logo */}
           <Link to="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">MC</span>
@@ -100,7 +99,6 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-1">
             {links.map((link) => (
               <Link
@@ -121,10 +119,8 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Right Side */}
           <div className="flex items-center gap-3">
 
-            {/* Notification Bell */}
             <Link
               to="/notifications"
               className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
@@ -137,7 +133,6 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* Profile Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
@@ -192,7 +187,6 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile Hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100"
@@ -202,7 +196,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileOpen && (
           <div className="md:hidden border-t border-gray-100 py-3 space-y-1">
             {links.map((link) => (
