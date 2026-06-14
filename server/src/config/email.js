@@ -1,27 +1,22 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"Mentor Connect" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: 'Mentor Connect <onboarding@resend.dev>',
       to,
       subject,
       html,
     });
-    console.log(`📧 Email sent: ${info.messageId}`);
+
+    if (error) {
+      console.error(`❌ Email Error: ${error.message}`);
+      return false;
+    }
+
+    console.log(`📧 Email sent: ${data.id}`);
     return true;
   } catch (error) {
     console.error(`❌ Email Error: ${error.message}`);
