@@ -21,10 +21,10 @@ const generateRefreshToken = (userId) => {
 // Sends refresh token as httpOnly cookie (cannot be accessed by JavaScript)
 const setRefreshTokenCookie = (res, refreshToken) => {
   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,       // not accessible via document.cookie
-    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-    sameSite: 'strict',  // prevents CSRF attacks
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };
 
